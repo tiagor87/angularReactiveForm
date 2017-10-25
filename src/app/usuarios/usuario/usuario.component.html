@@ -1,0 +1,19 @@
+<form [formGroup]="formUsuario" *ngIf="usuario$ | async as usuario">
+  <h3>Cadastro de usuário</h3>
+  <div class="form-group">
+    <label for="email">Email</label>
+    <input type="email" class="form-control" name="email" formControlName="email">
+  </div>
+  <div class="form-group">
+    <label for="senha">Senha</label>
+    <input type="password" class="form-control" name="senha" formControlName="senha">
+  </div>
+  <div class="text-center">
+    <button class="btn btn-success">Gravar</button>
+    <button type="button" class="btn btn-warning">Cancelar</button>
+  </div>
+  <div>
+    <h4>Funções</h4>
+    <app-role [role]="role" *ngFor="let role of usuario.roles"></app-role>
+  </div>
+</form>
