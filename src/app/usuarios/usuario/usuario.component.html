@@ -10,10 +10,11 @@
   </div>
   <div class="text-center">
     <button class="btn btn-success">Gravar</button>
-    <button type="button" class="btn btn-warning">Cancelar</button>
+    <button type="button" class="btn btn-warning" (click)="cancelar(usuario)">Cancelar</button>
   </div>
   <div>
     <h4>Funções</h4>
-    <app-role [role]="role" *ngFor="let role of usuario.roles"></app-role>
+    <app-nova-role></app-nova-role>
+    <app-role [role]="role" *ngFor="let role of roles"></app-role>
   </div>
 </form>
