@@ -26,10 +26,7 @@ export class UsuarioService {
   gravar(usuario: Usuario) {
     const id = usuario.id || UsuarioService.usuarios.length + 1;
     const i = UsuarioService.usuarios.findIndex(u => u.id === id);
-    const clone = Object.assign({}, usuario, {
-      id,
-      roles: usuario.roles.slice()
-    });
+    const clone = { ...usuario, roles: [...usuario.roles] };
     i < 0
       ? UsuarioService.usuarios.push(clone)
       : UsuarioService.usuarios.splice(i, 1, clone);

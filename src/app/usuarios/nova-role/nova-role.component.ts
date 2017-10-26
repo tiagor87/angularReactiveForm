@@ -1,7 +1,12 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  Output,
+  EventEmitter
+} from '@angular/core';
 import { FormControl, FormBuilder } from '@angular/forms';
 import { Subscription } from 'rxjs/';
-import { CadastroUsuarioService } from '../cadastro-usuario.service';
 
 @Component({
   selector: 'app-nova-role',
@@ -9,11 +14,9 @@ import { CadastroUsuarioService } from '../cadastro-usuario.service';
   styleUrls: ['./nova-role.component.scss']
 })
 export class NovaRoleComponent implements OnInit, OnDestroy {
+  @Output() adicionar = new EventEmitter<string>();
   controlRole: FormControl;
-  constructor(
-    private builder: FormBuilder,
-    private cadastroUsuarioService: CadastroUsuarioService
-  ) {}
+  constructor(private builder: FormBuilder) {}
 
   ngOnInit() {
     this.controlRole = this.builder.control('');
@@ -22,7 +25,7 @@ export class NovaRoleComponent implements OnInit, OnDestroy {
   ngOnDestroy() {}
 
   criar() {
-    this.cadastroUsuarioService.criarRole(this.controlRole.value);
+    this.adicionar.emit(this.controlRole.value);
     this.controlRole.reset();
   }
 }

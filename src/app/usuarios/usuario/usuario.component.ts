@@ -1,46 +1,33 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
+import { FormGroup, FormBuilder, FormControl, FormArray } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { Observable, Subscription } from 'rxjs/';
 import { UsuarioService } from '../../core/usuario.service';
 import { Usuario } from '../../shared/usuario';
-import {
-  CadastroUsuarioService,
-  EventoRole
-} from '../cadastro-usuario.service';
+import { RoleComponent } from '../role/role.component';
 
 @Component({
   selector: 'app-usuario',
   templateUrl: './usuario.component.html',
-  styleUrls: ['./usuario.component.scss'],
-  providers: [CadastroUsuarioService]
+  styleUrls: ['./usuario.component.scss']
 })
-export class UsuarioComponent implements OnInit, OnDestroy {
+export class UsuarioComponent implements OnInit {
   //#region atributos
-  private roleSubscription: Subscription;
-
   usuario$: Observable<Usuario>;
   formUsuario: FormGroup;
-  roles: Array<string>;
   //#endregion
   constructor(
     private builder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private usuarioService: UsuarioService,
-    private cadastroUsuarioService: CadastroUsuarioService
+    private usuarioService: UsuarioService
   ) {}
 
   //#region angular lifetime hooks
   ngOnInit() {
     this.configurarForms();
     this.carregarUsuario();
-    this.configurarEventosRoles();
-  }
-
-  ngOnDestroy() {
-    this.roleSubscription.unsubscribe();
   }
   //#endregion
 
@@ -55,26 +42,20 @@ export class UsuarioComponent implements OnInit, OnDestroy {
 
   cancelar(usuario: Usuario) {
     this.formUsuario.reset();
-    this.atribuirValorForm(
-      usuario.id,
-      usuario.email,
-      usuario.senha,
-      usuario.roles
-    );
+    this.atribuirValorForm(usuario);
   }
   //#endregion
 
   //#region roles
   adicionarRole(role: string) {
-    this.roles.push(role);
-  }
-
-  editarRole(indice: number, roleNova: string) {
-    this.roles.splice(indice, 1, roleNova);
+    (<FormArray>this.formUsuario.get('roles')).controls.push(
+      RoleComponent.buildControl(role)
+    );
+    console.log(this.formUsuario.value);
   }
 
   deletarRole(indice: number) {
-    this.roles.splice(indice, 1);
+    (<FormArray>this.formUsuario.get('roles')).controls.splice(indice, 1);
   }
   //#endregion
 
@@ -83,68 +64,30 @@ export class UsuarioComponent implements OnInit, OnDestroy {
     this.formUsuario = this.builder.group({
       id: this.builder.control(''),
       email: this.builder.control(''),
-      senha: this.builder.control('')
+      senha: this.builder.control(''),
+      roles: this.builder.array([])
     });
   }
 
-  private configurarEventosRoles() {
-    this.roleSubscription = this.cadastroUsuarioService.role$.subscribe(
-      ([evento, roleAntiga, roleNova]) =>
-        this.verificarEventoEModificarRoles(evento, roleAntiga, roleNova)
-    );
-  }
-
-  private verificarEventoEModificarRoles(
-    evento: EventoRole,
-    roleAntiga: string,
-    roleNova: string
-  ) {
-    const i = roleAntiga ? this.roles.indexOf(roleAntiga) : -1;
-    switch (evento) {
-      case EventoRole.Novo:
-        this.adicionarRole(roleNova);
-        break;
-      case EventoRole.Edicao:
-        this.editarRole(i, roleNova);
-        break;
-      case EventoRole.Delecao:
-        this.deletarRole(i);
-    }
-  }
-
-  private atribuirValorForm(
-    id: number,
-    email: string,
-    senha: string,
-    roles: string[]
-  ) {
+  private atribuirValorForm(usuario: Usuario) {
+    (<FormArray>this.formUsuario.get('roles')).controls = [
+      ...usuario.roles.map(() => RoleComponent.buildControl())
+    ];
     this.formUsuario.setValue({
-      id,
-      email,
-      senha
+      ...usuario
     });
-    this.roles = roles.slice();
   }
 
   private carregarUsuario() {
     this.usuario$ = this.route.params.switchMap(params =>
       this.usuarioService
         .obterPorId(+params['id'])
-        .do(usuario =>
-          this.atribuirValorForm(
-            usuario.id,
-            usuario.email,
-            usuario.senha,
-            usuario.roles
-          )
-        )
+        .do(usuario => this.atribuirValorForm(usuario))
     );
   }
 
   private obterValorCadastro() {
-    const usuario = this.formUsuario.value;
-    usuario.roles = this.roles.slice();
-    return usuario;
+    return this.formUsuario.value;
   }
   //#endregion
 }

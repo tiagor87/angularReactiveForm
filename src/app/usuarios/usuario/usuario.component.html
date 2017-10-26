@@ -8,10 +8,12 @@
     <label for="senha">Senha</label>
     <input type="password" class="form-control" name="senha" formControlName="senha">
   </div>
-  <div>
+  <div formArrayName="roles">
     <h4>Funções</h4>
-    <app-nova-role></app-nova-role>
-    <app-role [role]="role" *ngFor="let role of roles"></app-role>
+    <app-nova-role (adicionar)="adicionarRole($event)"></app-nova-role>
+    <div *ngFor="let roleControl of formUsuario.get('roles').controls; let i = index">
+      <app-role [control]="formUsuario.get('roles').controls[i]" (deletar)="deletarRole(i)"></app-role>
+    </div>
   </div>
   <hr>
   <div class="text-center">

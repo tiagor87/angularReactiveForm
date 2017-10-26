@@ -1,9 +1,9 @@
 <div class="row">
   <div class="col-xs-12">
     <div class="form-group input-group">
-      <input type="text" class="form-control" [formControl]="controlRole">
+      <input type="text" class="form-control" [formControl]="control">
       <span class="input-group-btn">
-        <button class="btn btn-danger" (click)="deletar()">Deletar</button>
+        <button type="button" class="btn btn-danger" (click)="deletar.emit()">Deletar</button>
       </span>
     </div>
   </div>

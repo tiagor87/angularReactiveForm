@@ -1,43 +1,29 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription, Observable } from 'rxjs/';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UsuarioService } from '../../core/usuario.service';
-import {
-  CadastroUsuarioService,
-  EventoRole
-} from '../cadastro-usuario.service';
 import { Usuario } from '../../shared/usuario';
+import { RoleComponent } from '../role/role.component';
 
 @Component({
   selector: 'app-novo-usuario',
   templateUrl: './novo-usuario.component.html',
-  styleUrls: ['./novo-usuario.component.scss'],
-  providers: [CadastroUsuarioService]
+  styleUrls: ['./novo-usuario.component.scss']
 })
-export class NovoUsuarioComponent implements OnInit, OnDestroy {
+export class NovoUsuarioComponent implements OnInit {
   //#region atributos
-  private roleSubscription: Subscription;
-
-  usuario$: Observable<Usuario>;
   formUsuario: FormGroup;
-  roles: Array<string>;
   //#endregion
   constructor(
     private builder: FormBuilder,
     private router: Router,
-    private usuarioService: UsuarioService,
-    private cadastroUsuarioService: CadastroUsuarioService
+    private usuarioService: UsuarioService
   ) {}
 
   //#region angular lifetime hooks
   ngOnInit() {
     this.configurarForms();
-    this.configurarEventosRoles();
-  }
-
-  ngOnDestroy() {
-    this.roleSubscription.unsubscribe();
   }
   //#endregion
 
@@ -51,21 +37,25 @@ export class NovoUsuarioComponent implements OnInit, OnDestroy {
   }
 
   cancelar(usuario: Usuario) {
-    this.router.navigate(['/']);
+    this.formUsuario.reset();
   }
   //#endregion
 
   //#region roles
   adicionarRole(role: string) {
-    this.roles.push(role);
+    (<FormArray>this.formUsuario.get('roles')).controls.push(
+      RoleComponent.buildControl(role)
+    );
   }
 
   editarRole(indice: number, roleNova: string) {
-    this.roles.splice(indice, 1, roleNova);
+    (<FormArray>this.formUsuario.get('roles')).controls[indice].setValue(
+      roleNova
+    );
   }
 
   deletarRole(indice: number) {
-    this.roles.splice(indice, 1);
+    (<FormArray>this.formUsuario.get('roles')).controls.splice(indice, 1);
   }
   //#endregion
 
@@ -74,40 +64,13 @@ export class NovoUsuarioComponent implements OnInit, OnDestroy {
     this.formUsuario = this.builder.group({
       id: this.builder.control(''),
       email: this.builder.control(''),
-      senha: this.builder.control('')
+      senha: this.builder.control(''),
+      roles: this.builder.array([])
     });
-    this.roles = [];
-  }
-
-  private configurarEventosRoles() {
-    this.roleSubscription = this.cadastroUsuarioService.role$.subscribe(
-      ([evento, roleAntiga, roleNova]) =>
-        this.verificarEventoEModificarRoles(evento, roleAntiga, roleNova)
-    );
-  }
-
-  private verificarEventoEModificarRoles(
-    evento: EventoRole,
-    roleAntiga: string,
-    roleNova: string
-  ) {
-    const i = roleAntiga ? this.roles.indexOf(roleAntiga) : -1;
-    switch (evento) {
-      case EventoRole.Novo:
-        this.adicionarRole(roleNova);
-        break;
-      case EventoRole.Edicao:
-        this.editarRole(i, roleNova);
-        break;
-      case EventoRole.Delecao:
-        this.deletarRole(i);
-    }
   }
 
   private obterValorCadastro() {
-    const usuario = this.formUsuario.value;
-    usuario.roles = this.roles.slice();
-    return usuario;
+    return this.formUsuario.value;
   }
   //#endregion
 }
