@@ -1,4 +1,4 @@
-<form [formGroup]="formUsuario" (submit)="gravar()" *ngIf="usuario$ | async as usuario">
+<form [formGroup]="formUsuario">
   <h3>Cadastro de usuário</h3>
   <div class="form-group">
     <label for="email">Email</label>
@@ -15,7 +15,7 @@
   </div>
   <hr>
   <div class="text-center">
-    <button type="submit" class="btn btn-success">Gravar</button>
-    <button type="button" class="btn btn-warning" (click)="cancelar(usuario)">Cancelar</button>
+    <button type="button" class="btn btn-success" (click)="gravar()">Gravar</button>
+    <button type="button" class="btn btn-warning" (click)="cancelar()">Cancelar</button>
   </div>
 </form>

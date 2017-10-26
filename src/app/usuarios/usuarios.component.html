@@ -1,6 +1,10 @@
 <div class="row">
   <div class="col-md-4">
     <ul class="list-group">
+      <li class="list-group-item" [routerLink]="['/', 'novo']" routerLinkActive="active">
+        <h4 class="list-group-item-heading">Novo usuário</h4>
+        <p class="list-group-item-text">Crie um novo usuário aqui</p>
+      </li>
       <li class="list-group-item" *ngFor="let usuario of usuarios$ | async" [routerLink]="['/', usuario.id]" routerLinkActive="active">
         <h4 class="list-group-item-heading">{{usuario.email}}</h4>
         <p class="list-group-item-text">{{usuario.roles.join(' ,')}}</p>

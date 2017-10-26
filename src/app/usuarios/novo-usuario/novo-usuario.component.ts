@@ -1,22 +1,21 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
-
-import { Observable, Subscription } from 'rxjs/';
+import { Subscription, Observable } from 'rxjs/';
+import { FormGroup, FormBuilder } from '@angular/forms';
+import { Router } from '@angular/router';
 import { UsuarioService } from '../../core/usuario.service';
-import { Usuario } from '../../shared/usuario';
 import {
   CadastroUsuarioService,
   EventoRole
 } from '../cadastro-usuario.service';
+import { Usuario } from '../../shared/usuario';
 
 @Component({
-  selector: 'app-usuario',
-  templateUrl: './usuario.component.html',
-  styleUrls: ['./usuario.component.scss'],
+  selector: 'app-novo-usuario',
+  templateUrl: './novo-usuario.component.html',
+  styleUrls: ['./novo-usuario.component.scss'],
   providers: [CadastroUsuarioService]
 })
-export class UsuarioComponent implements OnInit, OnDestroy {
+export class NovoUsuarioComponent implements OnInit, OnDestroy {
   //#region atributos
   private roleSubscription: Subscription;
 
@@ -26,7 +25,6 @@ export class UsuarioComponent implements OnInit, OnDestroy {
   //#endregion
   constructor(
     private builder: FormBuilder,
-    private route: ActivatedRoute,
     private router: Router,
     private usuarioService: UsuarioService,
     private cadastroUsuarioService: CadastroUsuarioService
@@ -35,7 +33,6 @@ export class UsuarioComponent implements OnInit, OnDestroy {
   //#region angular lifetime hooks
   ngOnInit() {
     this.configurarForms();
-    this.carregarUsuario();
     this.configurarEventosRoles();
   }
 
@@ -54,13 +51,7 @@ export class UsuarioComponent implements OnInit, OnDestroy {
   }
 
   cancelar(usuario: Usuario) {
-    this.formUsuario.reset();
-    this.atribuirValorForm(
-      usuario.id,
-      usuario.email,
-      usuario.senha,
-      usuario.roles
-    );
+    this.router.navigate(['/']);
   }
   //#endregion
 
@@ -85,6 +76,7 @@ export class UsuarioComponent implements OnInit, OnDestroy {
       email: this.builder.control(''),
       senha: this.builder.control('')
     });
+    this.roles = [];
   }
 
   private configurarEventosRoles() {
@@ -110,35 +102,6 @@ export class UsuarioComponent implements OnInit, OnDestroy {
       case EventoRole.Delecao:
         this.deletarRole(i);
     }
-  }
-
-  private atribuirValorForm(
-    id: number,
-    email: string,
-    senha: string,
-    roles: string[]
-  ) {
-    this.formUsuario.setValue({
-      id,
-      email,
-      senha
-    });
-    this.roles = roles.slice();
-  }
-
-  private carregarUsuario() {
-    this.usuario$ = this.route.params.switchMap(params =>
-      this.usuarioService
-        .obterPorId(+params['id'])
-        .do(usuario =>
-          this.atribuirValorForm(
-            usuario.id,
-            usuario.email,
-            usuario.senha,
-            usuario.roles
-          )
-        )
-    );
   }
 
   private obterValorCadastro() {

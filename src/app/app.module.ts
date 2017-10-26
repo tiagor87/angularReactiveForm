@@ -9,6 +9,7 @@ import { RoleComponent } from './usuarios/role/role.component';
 import { UsuarioService } from './core/usuario.service';
 import { NovaRoleComponent } from './usuarios/nova-role/nova-role.component';
 import { UsuariosComponent } from './usuarios/usuarios.component';
+import { NovoUsuarioComponent } from './usuarios/novo-usuario/novo-usuario.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { UsuariosComponent } from './usuarios/usuarios.component';
     UsuarioComponent,
     RoleComponent,
     NovaRoleComponent,
-    UsuariosComponent
+    UsuariosComponent,
+    NovoUsuarioComponent
   ],
   imports: [BrowserModule, ReactiveFormsModule, AppRoutingModule],
   providers: [UsuarioService],

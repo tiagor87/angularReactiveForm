@@ -10,7 +10,6 @@ import { CadastroUsuarioService } from '../cadastro-usuario.service';
 })
 export class NovaRoleComponent implements OnInit, OnDestroy {
   controlRole: FormControl;
-  subscription: Subscription;
   constructor(
     private builder: FormBuilder,
     private cadastroUsuarioService: CadastroUsuarioService
@@ -20,9 +19,7 @@ export class NovaRoleComponent implements OnInit, OnDestroy {
     this.controlRole = this.builder.control('');
   }
 
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
-  }
+  ngOnDestroy() {}
 
   criar() {
     this.cadastroUsuarioService.criarRole(this.controlRole.value);
