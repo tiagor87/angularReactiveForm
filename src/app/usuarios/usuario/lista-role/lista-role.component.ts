@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { FormArray } from '@angular/forms';
+import { RoleComponent } from '../role/role.component';
 
 @Component({
   selector: 'app-lista-role',
@@ -6,10 +8,16 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./lista-role.component.scss']
 })
 export class ListaRoleComponent implements OnInit {
+  @Input() roles: FormArray;
+  constructor() {}
 
-  constructor() { }
+  ngOnInit() {}
 
-  ngOnInit() {
+  adicionarRole(role: string) {
+    this.roles.push(RoleComponent.buildControl(role));
   }
 
+  deletarRole(indice: number) {
+    this.roles.removeAt(indice);
+  }
 }

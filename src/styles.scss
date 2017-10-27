@@ -1,1 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
+.sidebar {
+  position: absolute;
+  transform: translateX(-92%);
+  z-index: 1;
+  &:hover {
+    transform: translateX(0);
+  }
+  @media (min-width: 768px) {
+    transform: translateX(0);
+  }
+}

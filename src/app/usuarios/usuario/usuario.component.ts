@@ -49,14 +49,6 @@ export class UsuarioComponent implements OnInit {
     this.atribuirValorForm(usuario);
   }
 
-  adicionarRole(role: string) {
-    this.roles.push(RoleComponent.buildControl(role));
-  }
-
-  deletarRole(indice: number) {
-    this.roles.removeAt(indice);
-  }
-
   private configurarForms() {
     this.formUsuario = this.builder.group({
       id: this.builder.control(''),

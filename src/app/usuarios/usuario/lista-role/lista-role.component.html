@@ -1,3 +1,8 @@
-<p>
-  lista-role works!
-</p>
+<div>
+  <h4>Funções</h4>
+  <app-nova-role (adicionar)="adicionarRole($event)"></app-nova-role>
+  <div *ngFor="let role of roles.controls; let i = index">
+    <app-role [control]="role" (deletar)="deletarRole(i)"></app-role>
+  </div>
+
+</div>
