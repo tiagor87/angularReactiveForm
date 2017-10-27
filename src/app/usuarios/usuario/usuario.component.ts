@@ -5,7 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Observable, Subscription } from 'rxjs/';
 import { UsuarioService } from '../../core/usuario.service';
 import { Usuario } from '../../shared/usuario';
-import { RoleComponent } from '../role/role.component';
+import { RoleComponent } from './role/role.component';
 
 @Component({
   selector: 'app-usuario',
@@ -13,10 +13,9 @@ import { RoleComponent } from '../role/role.component';
   styleUrls: ['./usuario.component.scss']
 })
 export class UsuarioComponent implements OnInit {
-  //#region atributos
   usuario$: Observable<Usuario>;
   formUsuario: FormGroup;
-  //#endregion
+
   constructor(
     private builder: FormBuilder,
     private route: ActivatedRoute,
@@ -24,17 +23,22 @@ export class UsuarioComponent implements OnInit {
     private usuarioService: UsuarioService
   ) {}
 
-  //#region angular lifetime hooks
+  get roles(): FormArray {
+    return this.formUsuario.get('roles') as FormArray;
+  }
+
+  set roles(value: FormArray) {
+    this.formUsuario.setControl('roles', value);
+  }
+
   ngOnInit() {
     this.configurarForms();
     this.carregarUsuario();
+    this.formUsuario.valueChanges.subscribe(console.log);
   }
-  //#endregion
 
-  //#region usuario
   gravar() {
-    const usuario = this.obterValorCadastro();
-    this.usuarioService.gravar(usuario).subscribe(id => {
+    this.usuarioService.gravar(this.formUsuario.value).subscribe(id => {
       alert('Usuário gravado com sucesso.');
       this.router.navigate(['/', id]);
     });
@@ -44,22 +48,15 @@ export class UsuarioComponent implements OnInit {
     this.formUsuario.reset();
     this.atribuirValorForm(usuario);
   }
-  //#endregion
 
-  //#region roles
   adicionarRole(role: string) {
-    (<FormArray>this.formUsuario.get('roles')).controls.push(
-      RoleComponent.buildControl(role)
-    );
-    console.log(this.formUsuario.value);
+    this.roles.push(RoleComponent.buildControl(role));
   }
 
   deletarRole(indice: number) {
-    (<FormArray>this.formUsuario.get('roles')).controls.splice(indice, 1);
+    this.roles.removeAt(indice);
   }
-  //#endregion
 
-  //#region métodos privados
   private configurarForms() {
     this.formUsuario = this.builder.group({
       id: this.builder.control(''),
@@ -70,24 +67,15 @@ export class UsuarioComponent implements OnInit {
   }
 
   private atribuirValorForm(usuario: Usuario) {
-    (<FormArray>this.formUsuario.get('roles')).controls = [
-      ...usuario.roles.map(() => RoleComponent.buildControl())
-    ];
-    this.formUsuario.setValue({
-      ...usuario
-    });
+    this.roles = this.builder.array(
+      usuario.roles.map(RoleComponent.buildControl)
+    );
+    this.formUsuario.setValue(usuario);
   }
 
   private carregarUsuario() {
-    this.usuario$ = this.route.params.switchMap(params =>
-      this.usuarioService
-        .obterPorId(+params['id'])
-        .do(usuario => this.atribuirValorForm(usuario))
-    );
+    this.usuario$ = this.route.data
+      .map(data => data['usuario'])
+      .do(usuario => this.atribuirValorForm(usuario));
   }
-
-  private obterValorCadastro() {
-    return this.formUsuario.value;
-  }
-  //#endregion
 }

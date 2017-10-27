@@ -1,27 +1,16 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
+import { CoreModule } from './core/core.module';
+import { SharedModule } from './shared/shared.module';
+
 import { AppComponent } from './app.component';
-import { UsuarioComponent } from './usuarios/usuario/usuario.component';
-import { RoleComponent } from './usuarios/role/role.component';
-import { UsuarioService } from './core/usuario.service';
-import { NovaRoleComponent } from './usuarios/nova-role/nova-role.component';
-import { UsuariosComponent } from './usuarios/usuarios.component';
-import { NovoUsuarioComponent } from './usuarios/novo-usuario/novo-usuario.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    UsuarioComponent,
-    RoleComponent,
-    NovaRoleComponent,
-    UsuariosComponent,
-    NovoUsuarioComponent
-  ],
-  imports: [BrowserModule, ReactiveFormsModule, AppRoutingModule],
-  providers: [UsuarioService],
+  declarations: [AppComponent],
+  imports: [BrowserModule, CoreModule, AppRoutingModule, SharedModule],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

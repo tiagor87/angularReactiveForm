@@ -1,10 +1,4 @@
-import {
-  Component,
-  OnInit,
-  OnDestroy,
-  Output,
-  EventEmitter
-} from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormControl, FormBuilder } from '@angular/forms';
 import { Subscription } from 'rxjs/';
 
@@ -13,19 +7,17 @@ import { Subscription } from 'rxjs/';
   templateUrl: './nova-role.component.html',
   styleUrls: ['./nova-role.component.scss']
 })
-export class NovaRoleComponent implements OnInit, OnDestroy {
+export class NovaRoleComponent implements OnInit {
   @Output() adicionar = new EventEmitter<string>();
-  controlRole: FormControl;
+  control: FormControl;
   constructor(private builder: FormBuilder) {}
 
   ngOnInit() {
-    this.controlRole = this.builder.control('');
+    this.control = this.builder.control('');
   }
 
-  ngOnDestroy() {}
-
   criar() {
-    this.adicionar.emit(this.controlRole.value);
-    this.controlRole.reset();
+    this.adicionar.emit(this.control.value);
+    this.control.reset();
   }
 }
